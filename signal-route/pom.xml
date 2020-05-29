@@ -9,7 +9,7 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>signal-front</artifactId>
+    <artifactId>signal-route</artifactId>
     <version>${project.version}</version>
 
     <dependencies>
