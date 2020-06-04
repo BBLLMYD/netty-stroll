@@ -1,4 +1,4 @@
-package com.skr.signal.front.handler;
+package com.skr.signal.front.initialize;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -18,7 +18,7 @@ public class CheckHttpHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext channelHandlerContext, Object httpObject) throws Exception {
         //判断 msg 是不是 httprequest请求
-        if(httpObject instanceof HttpRequest) {
+        if(httpObject instanceof FullHttpRequest) {
 
             System.out.println("ctx 类型="+channelHandlerContext.getClass());
             System.out.println("pipeline hashcode" + channelHandlerContext.pipeline().hashCode() + " TestHttpServerHandler hash=" + this.hashCode());
@@ -26,12 +26,29 @@ public class CheckHttpHandler extends ChannelInboundHandlerAdapter {
             System.out.println("客户端地址" + channelHandlerContext.channel().remoteAddress());
 
             //获取到
-            HttpRequest httpRequest = (HttpRequest) httpObject;
+            FullHttpRequest httpRequest = (FullHttpRequest) httpObject;
             //获取uri, 过滤指定的资源
             URI uri = new URI(httpRequest.uri());
             if("/favicon.ico".equals(uri.getPath())) {
                 channelHandlerContext.channel().close();
                 return;
+            }
+
+            httpRequest.content();
+
+            // 2.获取请求体
+            ByteBuf buf = httpRequest.content();
+            String reqContent = buf.toString(CharsetUtil.UTF_8);
+
+            // 3.获取请求方法
+            HttpMethod method = httpRequest.method();
+
+            // 4.获取请求头
+            HttpHeaders headers = httpRequest.headers();
+
+            // 5.根据method，确定不同的逻辑
+            if(method.equals(HttpMethod.GET)){
+                // TODO
             }
 
             ByteBuf content = Unpooled.copiedBuffer("hello, 我是服务器", CharsetUtil.UTF_8);
