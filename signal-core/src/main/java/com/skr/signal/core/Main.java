@@ -8,9 +8,14 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.codec.LengthFieldPrepender;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.CharsetUtil;
 import javafx.scene.control.DialogEvent;
 
 import java.util.concurrent.TimeUnit;
@@ -34,8 +39,12 @@ public class Main {
                 protected void initChannel(SocketChannel socketChannel) throws Exception {
                     ChannelPipeline pipeline = socketChannel.pipeline();
                     // 检测 读，写，读+写，超时无对应事件的时候 发送心跳包
-                    pipeline.addLast(new IdleStateHandler(1,1,1, TimeUnit.MINUTES));
-                    pipeline.addLast(new HeartbeatHandlerAdapter());
+                    pipeline.addLast("idleStateHandler",new IdleStateHandler(1,1,1, TimeUnit.MINUTES));
+                    pipeline.addLast("idleStateTrigger",new HeartbeatHandlerAdapter());
+                    pipeline.addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4));
+                    pipeline.addLast(new LengthFieldPrepender(4));
+                    pipeline.addLast(new StringDecoder(CharsetUtil.UTF_8));
+                    pipeline.addLast(new StringEncoder(CharsetUtil.UTF_8));
                 }
             });
 
