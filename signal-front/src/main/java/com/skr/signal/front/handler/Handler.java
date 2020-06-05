@@ -6,8 +6,6 @@ package com.skr.signal.front.handler;
  */
 public interface Handler {
 
-    default void handle(){
-
-    }
+    void handle();
 
 }
