@@ -1,5 +1,6 @@
 package com.skr.signal.front.initialize;
 
+import com.skr.signal.front.handler.Handler;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -8,12 +9,13 @@ import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
 
 import java.net.URI;
+import java.util.Objects;
 
 /**
  * @author mqw
  * @create 2020-06-04-10:28
  */
-public class CheckHttpHandler extends ChannelInboundHandlerAdapter {
+public class HttpDistributer extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext channelHandlerContext, Object httpObject) throws Exception {
@@ -29,7 +31,9 @@ public class CheckHttpHandler extends ChannelInboundHandlerAdapter {
             FullHttpRequest httpRequest = (FullHttpRequest) httpObject;
             //获取uri, 过滤指定的资源
             URI uri = new URI(httpRequest.uri());
-            if("/favicon.ico".equals(uri.getPath())) {
+            String path = uri.getPath();
+            Handler handler = HandlerInitializer.getHandler(path);
+            if(Objects.isNull(handler)) {
                 channelHandlerContext.channel().close();
                 return;
             }
@@ -56,6 +60,8 @@ public class CheckHttpHandler extends ChannelInboundHandlerAdapter {
             response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain");
             response.headers().set(HttpHeaderNames.CONTENT_LENGTH, content.readableBytes());
             channelHandlerContext.writeAndFlush(response);
+        }else {
+            channelHandlerContext.channel().close();
         }
     }
 
