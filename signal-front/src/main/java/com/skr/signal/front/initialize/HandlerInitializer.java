@@ -38,8 +38,5 @@ public class HandlerInitializer {
        return urlHandlerMapping.get(url);
     }
 
-    public static void main(String[] args) {
-
-    }
 
 }

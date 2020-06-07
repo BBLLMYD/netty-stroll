@@ -15,14 +15,13 @@ public class HttpChanelInitializer extends ChannelInitializer<SocketChannel> {
 
     @Override
     protected void initChannel(SocketChannel socketChannel) throws Exception {
-        //得到管道
+        // 得到管道
         ChannelPipeline pipeline = socketChannel.pipeline();
-
         pipeline.addLast("http-decoder", new HttpRequestDecoder());
         pipeline.addLast("http-chunk-aggregator",new HttpObjectAggregator(65535));
         pipeline.addLast("http-encoder", new HttpResponseEncoder());
-        //2. 增加自定义的handler
-        pipeline.addLast("CheckHandler", new HttpDistributer());
+        // 增加自定义的分发器handler
+        pipeline.addLast("CheckHandler", new HttpDistributor());
     }
 
 }
