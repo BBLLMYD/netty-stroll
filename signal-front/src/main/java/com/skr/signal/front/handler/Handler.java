@@ -1,5 +1,7 @@
 package com.skr.signal.front.handler;
 
+import com.skr.signal.front.exception.ServiceException;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -21,7 +23,7 @@ public abstract class Handler<Request,Response> {
             ParameterizedType parameterizedType = (ParameterizedType) type;
             return (Class<Request>) parameterizedType.getActualTypeArguments()[0];
         }
-        throw new RuntimeException("处理器未继承com.skr.signal.front.handler.Handler");
+        throw new ServiceException("处理器未继承com.skr.signal.front.handler.Handler");
     }
 
     public String getAnswer(String json) {
@@ -36,7 +38,7 @@ public abstract class Handler<Request,Response> {
         try {
             response = handle(request);
         } catch (Throwable e) {
-            throw new RuntimeException("请求处理异常",e);
+            throw new ServiceException("请求处理异常",e);
         }
         return response;
     }
@@ -46,7 +48,7 @@ public abstract class Handler<Request,Response> {
         try {
             requestByFastJson = parseObject(json, deSerializable());
         }catch (Exception e){
-            throw new RuntimeException("请求数据格式异常",e);
+            throw new ServiceException("请求数据格式异常",e);
         }
         return requestByFastJson;
     }

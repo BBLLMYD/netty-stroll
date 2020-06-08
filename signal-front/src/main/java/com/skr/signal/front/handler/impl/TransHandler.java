@@ -5,10 +5,6 @@ import com.skr.signal.front.dto.RequestInfo;
 import com.skr.signal.front.dto.ResponseInfo;
 import com.skr.signal.front.handler.Handler;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.RunnableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * @author mqw
@@ -20,7 +16,7 @@ public class TransHandler extends Handler<RequestInfo, ResponseInfo> {
     @Override
     public ResponseInfo handle(RequestInfo requestInfo) {
         ResponseInfo info = new ResponseInfo();
-        info.setAnswer("answer312312312");
+        info.setAnswer("构建响应对象示例");
         return info;
     }
 

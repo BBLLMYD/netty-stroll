@@ -1,4 +1,4 @@
-package com.skr.signal.core;
+package com.skr.signal.core.heartbeat;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

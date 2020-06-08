@@ -1,6 +1,7 @@
 package com.skr.signal.front.initialize;
 
 import com.skr.signal.front.content.Constant;
+import com.skr.signal.front.exception.ServiceException;
 import com.skr.signal.front.handler.Handler;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -64,7 +65,13 @@ public class HttpDistributor extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         log.error(Constant.SERVER_ERROR,cause);
-        ctx.writeAndFlush(buildResponse(cause.getMessage()));
+        String msg;
+        if(cause instanceof ServiceException){
+            msg = ((ServiceException) cause).getMsg();
+        }else {
+            msg = "内部错误";
+        }
+        ctx.writeAndFlush(buildResponse(msg));
         ctx.channel().close();
     }
 

@@ -1,4 +1,4 @@
-package com.skr.signal.core;
+package com.skr.signal.core.heartbeat;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -16,7 +16,6 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.CharsetUtil;
-import javafx.scene.control.DialogEvent;
 
 import java.util.concurrent.TimeUnit;
 
