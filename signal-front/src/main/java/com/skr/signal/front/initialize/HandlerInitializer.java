@@ -1,9 +1,11 @@
 package com.skr.signal.front.initialize;
 
+import com.skr.signal.front.exception.ServiceException;
 import com.skr.signal.front.handler.Handler;
 import org.reflections.Reflections;
 
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -29,6 +31,9 @@ public class HandlerInitializer {
                 handler = (Handler)aClass.newInstance();
             } catch (Exception e) {
                 continue;
+            }
+            if(!Objects.isNull(urlHandlerMapping.get(path))){
+                throw new ServiceException("处理器路径存在冲突："+path);
             }
             urlHandlerMapping.put(path,handler);
         }
