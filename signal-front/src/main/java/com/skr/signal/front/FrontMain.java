@@ -13,8 +13,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 public class FrontMain {
 
     public static void main(String[] args) {
-        EventLoopGroup boss = new NioEventLoopGroup(1);
-        EventLoopGroup worker = new NioEventLoopGroup(1);
+        EventLoopGroup boss = new NioEventLoopGroup(5);
+        EventLoopGroup worker = new NioEventLoopGroup(5);
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(boss,worker)
