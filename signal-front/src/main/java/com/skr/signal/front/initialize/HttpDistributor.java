@@ -80,6 +80,8 @@ public class HttpDistributor extends ChannelInboundHandlerAdapter {
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, byteBuf);
         response.headers().set(CONTENT_TYPE, "application/json");
         response.headers().set(CONTENT_LENGTH, byteBuf.readableBytes());
+        response.headers().set("Channel",this.hashCode());
+        response.headers().set("Thread",Thread.currentThread().getId()+","+Thread.currentThread().getName());
         return response;
     }
 }
