@@ -10,7 +10,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
  * @author mqw
  * @create 2020-05-28-16:44
  */
-public class Main {
+public class FrontMain {
 
     public static void main(String[] args) {
         EventLoopGroup boss = new NioEventLoopGroup(1);
