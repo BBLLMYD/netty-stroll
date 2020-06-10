@@ -1,13 +1,14 @@
-package com.skr.signal.front.initialize;
+package com.skr.signal.front.async;
+
 
 import com.skr.signal.front.handler.Handler;
+import com.skr.signal.front.initialize.HttpResponseBuilder;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.util.CharsetUtil;
 import lombok.Builder;
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.Callable;
 
@@ -25,7 +26,7 @@ public class AsyncHandleUnit implements Callable<Boolean> {
     Handler handler;
 
     @Override
-    public Boolean call() throws Exception{
+    public Boolean call() {
         String reqContent = buf.toString(CharsetUtil.UTF_8);
         String data = handler.getAnswer(reqContent);
         /* 将响应数据封装成默认httpResponse */
@@ -33,5 +34,7 @@ public class AsyncHandleUnit implements Callable<Boolean> {
         ChannelFuture future = this.channelHandlerContext.writeAndFlush(response);
         /* 当客户端由于超时等原因链接断开时isSuccess为false */
         return future.isSuccess();
+        /* 不关心响应动作的达到情况性，提高吞吐率。正常计算后即视为成功处理 */
+        // return true;
     }
 }
