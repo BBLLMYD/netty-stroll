@@ -1,6 +1,8 @@
-package com.skr.signal.front.initialize;
+package com.skr.signal.front.async;
+
 
 import com.skr.signal.front.exception.ServiceException;
+import com.skr.signal.front.initialize.NamedThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.*;
@@ -19,8 +21,8 @@ public class AsyncResponseManager {
     private static ExecutorService pool = new ThreadPoolExecutor(PARALLELISM,
             PARALLELISM + 2,
             10L, TimeUnit.MILLISECONDS,
-                    new LinkedBlockingQueue<>(7),
-                    new NamedThreadFactory("asyncResponse-pool-%d"));
+            new LinkedBlockingQueue<>(7),
+            new NamedThreadFactory("asyncResponse-pool-%d"));
 
     public static void asyncResponse(AsyncHandleUnit asyncHandleUnit) throws Exception {
         Future<Boolean> future = pool.submit(asyncHandleUnit);
