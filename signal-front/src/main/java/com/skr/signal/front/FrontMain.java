@@ -14,7 +14,7 @@ public class FrontMain {
 
     public static void main(String[] args) {
         EventLoopGroup boss = new NioEventLoopGroup(5);
-        EventLoopGroup worker = new NioEventLoopGroup(5);
+        EventLoopGroup worker = new NioEventLoopGroup(3);
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(boss,worker)
