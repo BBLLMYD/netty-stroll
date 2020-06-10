@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * @create 2020-06-04-11:03 下午
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE})
+@Target({ ElementType.TYPE,ElementType.LOCAL_VARIABLE})
 public @interface HandlerTag {
 
     String path() default "";

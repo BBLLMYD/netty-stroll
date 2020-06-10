@@ -3,20 +3,14 @@ package com.skr.signal.front.initialize;
 import com.skr.signal.front.content.Constant;
 import com.skr.signal.front.exception.ServiceException;
 import com.skr.signal.front.handler.Handler;
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
-import lombok.extern.slf4j.XSlf4j;
-import lombok.val;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.lang.annotation.ElementType;
 import java.net.URI;
 import java.util.Objects;
 
@@ -24,6 +18,16 @@ import static io.netty.handler.codec.http.HttpHeaderNames.*;
 
 /**
  * @author mqw
+ *
+ * 当前handler会有几个实例，取决于workerGroup设置的线程数量
+ * *****重点*****：整个pipeline都是在同一个线程里完成的，
+ *  如果当前pipeline流程中有阻塞状态的线程，此时后续的请求不会开启新的worker线程处理！！而是同步阻塞！！
+ *      （因为当线程阻塞的时候netty的设计认为你是在进行处理IO读写操作）
+ *  如果当前pipeline流程中的线程处于Runnable的忙碌状态，后续的请求才会开启新的线程处理！！
+ *      （并会新建当前pipeline下的handler对象）
+ *  所以在IO读写的handler中，尽量不要做其他有阻塞行为动作！！可以交给其他线程池异步隔离！！
+ *  将handler线程阻塞会严重影响吞吐率！！
+ *
  * @create 2020-06-04-10:28
  */
 @Slf4j
@@ -45,17 +49,22 @@ public class HttpDistributor extends ChannelInboundHandlerAdapter {
                 return;
             }
 
+            System.out.println(channelHandlerContext.hashCode());
+            System.out.println(channelHandlerContext.pipeline().hashCode());
+            System.out.println(this.hashCode());
+            // boolean flag = 1 == 1;
+            // while (flag){}
+
             // 获取请求体
             ByteBuf buf = httpRequest.content();
-            String reqContent = buf.toString(CharsetUtil.UTF_8);
 
-            /* Handler的抽象已经封装好序列化规则 */
-            String data = handler.getAnswer(reqContent);
-
-            /* 将响应数据封装成默认httpResponse */
-            FullHttpResponse response = buildResponse(data);
-
-            channelHandlerContext.writeAndFlush(response);
+            // 构建异步响应单元，交给处理器
+            AsyncHandleUnit handleUnit = AsyncHandleUnit.builder()
+                    .channelHandlerContext(channelHandlerContext)
+                    .buf(buf)
+                    .handler(handler)
+                    .build();
+            AsyncResponseManager.asyncResponse(handleUnit);
         }else {
             // 不规范请求直接关闭
             channelHandlerContext.channel().close();
@@ -71,17 +80,8 @@ public class HttpDistributor extends ChannelInboundHandlerAdapter {
         }else {
             msg = "内部错误";
         }
-        ctx.writeAndFlush(buildResponse(msg));
+        ctx.writeAndFlush(HttpResponseBuilder.buildResponse(msg));
         ctx.channel().close();
     }
 
-    private FullHttpResponse buildResponse(String content){
-        ByteBuf byteBuf = Unpooled.copiedBuffer(content, CharsetUtil.UTF_8);
-        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, byteBuf);
-        response.headers().set(CONTENT_TYPE, "application/json");
-        response.headers().set(CONTENT_LENGTH, byteBuf.readableBytes());
-        response.headers().set("Channel",this.hashCode());
-        response.headers().set("Thread",Thread.currentThread().getId()+","+Thread.currentThread().getName());
-        return response;
-    }
 }
