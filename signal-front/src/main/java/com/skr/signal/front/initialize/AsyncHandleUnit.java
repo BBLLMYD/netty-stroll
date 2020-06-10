@@ -7,6 +7,7 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.util.CharsetUtil;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.Callable;
 
@@ -24,12 +25,13 @@ public class AsyncHandleUnit implements Callable<Boolean> {
     Handler handler;
 
     @Override
-    public Boolean call() {
+    public Boolean call() throws Exception{
         String reqContent = buf.toString(CharsetUtil.UTF_8);
         String data = handler.getAnswer(reqContent);
         /* 将响应数据封装成默认httpResponse */
         FullHttpResponse response = HttpResponseBuilder.buildResponse(data);
-        this.channelHandlerContext.writeAndFlush(response);
-        return true;
+        ChannelFuture future = this.channelHandlerContext.writeAndFlush(response);
+        /* 当客户端由于超时等原因链接断开时isSuccess为false */
+        return future.isSuccess();
     }
 }
