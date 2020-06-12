@@ -1,4 +1,4 @@
-package com.skr.signal.common.test;
+package com.skr.signal.route.test;
 
 /**
  * @author mqw
