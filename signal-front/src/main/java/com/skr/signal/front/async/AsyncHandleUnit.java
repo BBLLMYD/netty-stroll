@@ -22,13 +22,12 @@ import java.util.concurrent.Callable;
 public class AsyncHandleUnit implements Callable<Boolean> {
 
     ChannelHandlerContext channelHandlerContext;
-    ByteBuf buf;
+    String content;
     Handler handler;
 
     @Override
     public Boolean call() {
-        String reqContent = buf.toString(CharsetUtil.UTF_8);
-        String data = handler.getAnswer(reqContent);
+        String data = handler.getAnswer(content);
         /* 将响应数据封装成默认httpResponse */
         FullHttpResponse response = HttpResponseBuilder.buildResponse(data);
         ChannelFuture future = this.channelHandlerContext.writeAndFlush(response);
