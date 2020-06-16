@@ -9,6 +9,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.*;
+import io.netty.util.CharsetUtil;
+import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 import java.net.URI;
 import java.util.Objects;
@@ -55,14 +57,17 @@ public class HttpDistributor extends ChannelInboundHandlerAdapter {
 
             // 获取请求体
             ByteBuf buf = httpRequest.content();
+            String reqContent = buf.toString(CharsetUtil.UTF_8);
 
             // 构建异步响应单元，交给处理器
             AsyncHandleUnit handleUnit = AsyncHandleUnit.builder()
                     .channelHandlerContext(channelHandlerContext)
-                    .buf(buf)
+                    .content(reqContent)
                     .handler(handler)
                     .build();
             AsyncResponseManager.asyncResponse(handleUnit);
+            ReferenceCountUtil.release(buf);
+
         }else {
             // 不规范请求直接关闭
             channelHandlerContext.channel().close();
