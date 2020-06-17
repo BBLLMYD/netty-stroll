@@ -15,7 +15,8 @@ public class WebSocketHandler  extends SimpleChannelInboundHandler<TextWebSocket
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) {
         //回复消息
-        ctx.channel().writeAndFlush(new TextWebSocketFrame("服务器时间" + LocalDateTime.now() + " " + msg.text()));
+        System.err.println(msg.text());
+        ctx.channel().writeAndFlush(new TextWebSocketFrame("服务器时间" + LocalDateTime.now() + " "));
     }
 
     //当web客户端连接后
