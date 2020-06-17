@@ -3,9 +3,7 @@ package com.skr.signal.front.initialize;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.http.HttpRequestDecoder;
-import io.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.handler.codec.http.*;
 
 /**
  * @author mqw
@@ -16,12 +14,12 @@ public class HttpChanelInitializer extends ChannelInitializer<SocketChannel> {
     @Override
     protected void initChannel(SocketChannel socketChannel) throws Exception {
         // 得到管道
+        System.out.println(Thread.currentThread().getId()+","+this.hashCode());
         ChannelPipeline pipeline = socketChannel.pipeline();
-        pipeline.addLast("http-decoder", new HttpRequestDecoder());
+        pipeline.addLast("http-codec", new HttpServerCodec());
         pipeline.addLast("http-chunk-aggregator",new HttpObjectAggregator(65535));
-        pipeline.addLast("http-encoder", new HttpResponseEncoder());
         // 增加自定义的分发器handler
-        pipeline.addLast("CheckHandler", new HttpDistributor());
+        pipeline.addLast("distribute-handler", new HttpDistributor());
     }
 
 }
