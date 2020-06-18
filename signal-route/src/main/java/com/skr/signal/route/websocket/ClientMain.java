@@ -30,17 +30,17 @@ public class ClientMain {
     public static void main(String[] args) throws URISyntaxException, InterruptedException {
         EventLoopGroup group = new NioEventLoopGroup();
         Bootstrap boot = new Bootstrap();
-        boot.option(ChannelOption.SO_KEEPALIVE,true)
-                .option(ChannelOption.TCP_NODELAY,true)
+        boot.option(ChannelOption.SO_KEEPALIVE, true)
+                .option(ChannelOption.TCP_NODELAY, true)
                 .group(group)
                 .handler(new LoggingHandler(LogLevel.INFO))
                 .channel(NioSocketChannel.class)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
-                    protected void initChannel(SocketChannel socketChannel) throws Exception {
+                    protected void initChannel(SocketChannel socketChannel) {
                         ChannelPipeline p = socketChannel.pipeline();
                         p.addLast(new HttpClientCodec(),
-                                new HttpObjectAggregator(1024*1024*10));
+                                new HttpObjectAggregator(1024 * 1024 * 10));
                         p.addLast("hookedHandler", new WebSocketClientHandler());
                     }
                 });
@@ -49,10 +49,10 @@ public class ClientMain {
 
 
         WebSocketClientHandshaker handshaker
-                = WebSocketClientHandshakerFactory.newHandshaker(websocketURI, WebSocketVersion.V13, null, true,httpHeaders);
+                = WebSocketClientHandshakerFactory.newHandshaker(websocketURI, WebSocketVersion.V13, null, true, httpHeaders);
         System.out.println("connect");
-        final Channel channel= boot.connect(websocketURI.getHost(),websocketURI.getPort()).sync().channel();
-        WebSocketClientHandler handler = (WebSocketClientHandler)channel.pipeline().get("hookedHandler");
+        final Channel channel = boot.connect(websocketURI.getHost(), websocketURI.getPort()).sync().channel();
+        WebSocketClientHandler handler = (WebSocketClientHandler) channel.pipeline().get("hookedHandler");
         handler.setHandshaker(handshaker);
         handshaker.handshake(channel);
         //阻塞等待是否握手成功
@@ -60,8 +60,8 @@ public class ClientMain {
 
 
         Thread text = new Thread(() -> {
-            int i=30;
-            while (i>0){
+            int i = 30;
+            while (i > 0) {
                 try {
                     Thread.sleep(3000);
                 } catch (InterruptedException e) {
@@ -69,34 +69,33 @@ public class ClientMain {
                 System.out.println("text send");
                 TextWebSocketFrame frame = new TextWebSocketFrame("我是文本");
                 channel.writeAndFlush(frame).addListener((ChannelFutureListener) channelFuture -> {
-                    if(channelFuture.isSuccess()){
+                    if (channelFuture.isSuccess()) {
                         System.out.println("text send success");
-                    }else{
-                        System.out.println("text send failed  "+channelFuture.cause().getMessage());
+                    } else {
+                        System.out.println("text send failed  " + channelFuture.cause().getMessage());
                     }
                 });
             }
-
         });
 
 
         Thread bina = new Thread(() -> {
-            File file=new File("C:\\Users\\Administrator\\Desktop\\test.wav");
-            FileInputStream fin= null;
+            File file = new File("C:\\Users\\Administrator\\Desktop\\test.wav");
+            FileInputStream fin = null;
             try {
                 fin = new FileInputStream(file);
-                int len=0;
-                byte[] data=new byte[1024];
-                while ((len=fin.read(data))>0){
-                    ByteBuf bf= Unpooled.buffer().writeBytes(data);
-                    BinaryWebSocketFrame binaryWebSocketFrame=new BinaryWebSocketFrame(bf);
+                int len = 0;
+                byte[] data = new byte[1024];
+                while ((len = fin.read(data)) > 0) {
+                    ByteBuf bf = Unpooled.buffer().writeBytes(data);
+                    BinaryWebSocketFrame binaryWebSocketFrame = new BinaryWebSocketFrame(bf);
                     channel.writeAndFlush(binaryWebSocketFrame).addListener(new ChannelFutureListener() {
                         @Override
                         public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                            if(channelFuture.isSuccess()){
+                            if (channelFuture.isSuccess()) {
                                 System.out.println("bina send success");
-                            }else{
-                                System.out.println("bina send failed  "+channelFuture.cause().toString());
+                            } else {
+                                System.out.println("bina send failed  " + channelFuture.cause().toString());
                             }
                         }
                     });
