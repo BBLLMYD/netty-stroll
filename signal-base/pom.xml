@@ -9,16 +9,28 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>signal-common</artifactId>
+    <artifactId>signal-base</artifactId>
     <version>${project.version}</version>
 
     <dependencies>
 
+
         <dependency>
-            <groupId>com.aliyun.openservices</groupId>
-            <artifactId>ons-client</artifactId>
-            <version>1.8.4.Final</version>
-            <scope>compile</scope>
+            <groupId>com.dyuproject.protostuff</groupId>
+            <artifactId>protostuff-core</artifactId>
+            <version>1.0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>com.dyuproject.protostuff</groupId>
+            <artifactId>protostuff-runtime</artifactId>
+            <version>1.0.8</version>
+        </dependency>
+
+        <!-- ZooKeeper -->
+        <dependency>
+            <groupId>org.apache.zookeeper</groupId>
+            <artifactId>zookeeper</artifactId>
+            <version>3.4.14</version>
         </dependency>
     </dependencies>
 
