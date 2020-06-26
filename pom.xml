@@ -94,7 +94,24 @@
             <artifactId>reflections</artifactId>
             <version>0.9.11</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>29.0-jre</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.2</version>
+        </dependency>
+
     </dependencies>
+
+
+
     <build>
         <resources>
             <!-- 先指定 src/main/resources下所有文件及文件夹为资源文件 -->
