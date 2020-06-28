@@ -1,7 +1,7 @@
 package com.skr.signal.base.rpc.client;
 
 import com.skr.signal.base.registry.ServiceDiscover;
-import com.skr.signal.base.registry.impl.zookeeper.ZKLoadPolicy;
+import com.skr.signal.base.registry.impl.load.RandomLoadPolicy;
 import com.skr.signal.base.registry.impl.zookeeper.ZKServiceDiscovery;
 import com.skr.signal.base.rpc.client.proxy.RpcClient;
 import com.skr.signal.base.rpc.letter.RpcRequest;
@@ -41,7 +41,7 @@ public final class RpcNettyClient {
         PropertiesUtil propertiesUtil = PropertiesUtil.newInstance("config-rpc.properties");
         String registrationAddress = propertiesUtil.readProperty("registration.address");
         rpcNettyClient = new RpcNettyClient();
-        rpcNettyClient.setServiceDiscover(new ZKServiceDiscovery(registrationAddress,new ZKLoadPolicy()));
+        rpcNettyClient.setServiceDiscover(new ZKServiceDiscovery(registrationAddress,new RandomLoadPolicy()));
 
         eventLoopGroup = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
