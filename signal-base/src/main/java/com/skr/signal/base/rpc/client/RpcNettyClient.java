@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -79,8 +80,11 @@ public final class RpcNettyClient {
 
         Channel channel = ChannelManager.getChannel(new InetSocketAddress(address[0],Integer.valueOf(address[1])));
 
+        CountDownLatch latch = new CountDownLatch(1);
+
         if (channel != null && channel.isActive()) {
             // 放入未处理的请求
+            AsyncResultContainer.put(rpcRequest.getTraceId(),resultFuture);
             channel.writeAndFlush(rpcRequest).addListener((ChannelFutureListener) future -> {
                 if (future.isSuccess()) {
                     log.info("client send message: [{}]", rpcRequest);
@@ -89,15 +93,22 @@ public final class RpcNettyClient {
                     resultFuture.completeExceptionally(future.cause());
                     log.error("Send failed:", future.cause());
                 }
+                latch.countDown();
             });
         } else {
             throw new IllegalStateException();
+        }
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            log.error(" wait result error : ",e);
         }
         return resultFuture;
     }
 
     public static <T> T createProxy(Class<T> interfaceClass) {
-        return new RpcClient().create(interfaceClass);
+        RpcClient rpcClient = new RpcClient();
+        return rpcClient.create(interfaceClass);
     }
 
 

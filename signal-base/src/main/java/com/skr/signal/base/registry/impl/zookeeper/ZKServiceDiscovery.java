@@ -35,6 +35,7 @@ public class ZKServiceDiscovery implements ServiceDiscover {
 
     @Override
     public String discover(String serviceName) {
+        CuratorUtils.initZkClient(registryAddress);
         List<String> serviceUrlList = CuratorUtils.getChildrenNodes(serviceName);
         String serviceAddress = loadPolicy.filterServices(serviceUrlList);
         return serviceAddress;

@@ -16,18 +16,23 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.timeout.IdleStateHandler;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import sun.rmi.runtime.Log;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
  * @author mqw
  * @create 2020-06-22-12:33
  */
+@Slf4j
 public class RpcServer {
 
     private String serverAddress;
@@ -45,7 +50,7 @@ public class RpcServer {
 
     private static volatile RpcServer serverInstance;
 
-    public static RpcServer getInstance() throws InterruptedException {
+    public static RpcServer run() throws InterruptedException {
         if(serverInstance == null){
             synchronized (RpcServer.class){
                 if(serverInstance == null){
@@ -79,6 +84,7 @@ public class RpcServer {
             @Override
             protected void initChannel(SocketChannel ch) {
                 ChannelPipeline pipeline = ch.pipeline();
+                pipeline.addLast(new IdleStateHandler(30, 0, 0, TimeUnit.SECONDS));
                 pipeline.addLast(new LengthFieldBasedFrameDecoder(65536, 0, 4, 0, 0));
                 pipeline.addLast(new RpcDecoder(RpcRequest.class));
                 pipeline.addLast(new RpcEncoder(RpcResponse.class));
@@ -102,6 +108,11 @@ public class RpcServer {
                 list.stream().forEach(vo->{
                     String serviceName = vo.getAnnotation(RpcServiceTag.class).serviceName();
                     serviceRegistry.register(serviceName,serverAddress);
+                    try {
+                        handlerMap.put(serviceName,vo.newInstance());
+                    } catch (Exception e) {
+                        log.error("初始化业务实现类异常",e);
+                    }
                 });
             }
         }

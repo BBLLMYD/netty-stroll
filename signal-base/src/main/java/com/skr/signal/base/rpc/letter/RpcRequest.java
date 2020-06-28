@@ -15,4 +15,6 @@ public class RpcRequest {
     Object[] parameters;
     Class<?>[] parameterTypes;
 
+    String tag;
+
 }

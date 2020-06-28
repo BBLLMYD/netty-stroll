@@ -30,7 +30,7 @@ public final class CuratorUtils {
         try {
             path = ZK_REGISTRY_PATH +"/"+ path;
             if (registeredPathSet.contains(path) || zkClient.checkExists().forPath(path) != null) {
-
+                log.info("path已经存在{}",path);
             } else {
                 zkClient.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(path);
             }
