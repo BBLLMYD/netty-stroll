@@ -10,7 +10,7 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
 
-        RpcServer instance = RpcServer.getInstance();
+        RpcServer instance = RpcServer.run();
 
     }
 
