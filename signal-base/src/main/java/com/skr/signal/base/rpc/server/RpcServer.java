@@ -50,7 +50,7 @@ public class RpcServer {
 
     private static volatile RpcServer serverInstance;
 
-    public static RpcServer run() throws InterruptedException {
+    public static RpcServer run() {
         if(serverInstance == null){
             synchronized (RpcServer.class){
                 if(serverInstance == null){
@@ -74,7 +74,7 @@ public class RpcServer {
     }
 
 
-    private void start() throws InterruptedException {
+    private void start() {
         bossGroup = new NioEventLoopGroup();
         workerGroup = new NioEventLoopGroup();
         ServerBootstrap bootstrap = new ServerBootstrap();
@@ -98,7 +98,6 @@ public class RpcServer {
         String host = array[0];
         int port = Integer.parseInt(array[1]);
 
-        ChannelFuture future = bootstrap.bind(host, port).sync();
         if (serviceRegistry != null) {
             PropertiesUtil propertiesUtil = PropertiesUtil.newInstance("config-rpc.properties");
             String basePackage = propertiesUtil.readProperty("server.basePackage");
@@ -116,7 +115,12 @@ public class RpcServer {
                 });
             }
         }
-        future.channel().closeFuture().sync();
+        try {
+            ChannelFuture future = bootstrap.bind(host, port).sync();
+            future.channel().closeFuture().sync();
+        } catch (Exception e) {
+            throw new RuntimeException("服务启动失败",e);
+        }
     }
 
 

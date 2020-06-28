@@ -11,7 +11,6 @@ public class BaseMain {
 
     public static void main(String[] args) throws InterruptedException {
         RpcServer instance = RpcServer.run();
-        System.out.println(instance);
     }
 
 }
