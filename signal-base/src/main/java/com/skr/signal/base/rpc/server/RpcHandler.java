@@ -2,6 +2,7 @@ package com.skr.signal.base.rpc.server;
 
 import com.skr.signal.base.rpc.letter.RpcRequest;
 import com.skr.signal.base.rpc.letter.RpcResponse;
+import com.skr.signal.common.Constant;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,11 @@ public class RpcHandler extends SimpleChannelInboundHandler<RpcRequest> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcRequest request) throws Exception {
+        if (Constant.TAG_KEEP_ALIVE.equals(request.getTag())) {
+            log.info("收到服务调用侧 {} 的心跳包，{}",ctx.channel().remoteAddress(),System.currentTimeMillis());
+            return;
+        }
+
         RpcResponse response = new RpcResponse();
         response.setTraceId(request.getTraceId());
         try {

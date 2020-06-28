@@ -1,15 +1,16 @@
 package com.skr.signal.base.rpc.client.proxy;
 
-import com.skr.signal.base.registry.impl.zookeeper.ZKServiceDiscovery;
 import com.skr.signal.base.rpc.client.RpcNettyClient;
 import com.skr.signal.base.rpc.letter.RpcRequest;
 import com.skr.signal.base.rpc.letter.RpcResponse;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author mqw
@@ -20,14 +21,29 @@ public class RpcClient implements InvocationHandler {
 
     @SuppressWarnings("unchecked")
     public <T> T create(Class<T> interfaceClass) {
-        return (T) Proxy.newProxyInstance(
+        T o = (T)Proxy.newProxyInstance(
                 interfaceClass.getClassLoader(),
                 new Class<?>[]{interfaceClass},
                 this);
+        return o;
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) {
+    public Object invoke(Object proxy, Method method, Object[] args) throws Exception {
+        if (Object.class == method.getDeclaringClass()) {
+            String name = method.getName();
+            if ("equals".equals(name)) {
+                return proxy == args[0];
+            } else if ("hashCode".equals(name)) {
+                return System.identityHashCode(proxy);
+            } else if ("toString".equals(name)) {
+                return proxy.getClass().getName() + "@" +
+                        Integer.toHexString(System.identityHashCode(proxy)) +
+                        ", with InvocationHandler " + this;
+            } else {
+                throw new IllegalStateException(String.valueOf(method));
+            }
+        }
         RpcRequest request = new RpcRequest();
         request.setTraceId(UUID.randomUUID().toString());
         request.setClassName(method.getDeclaringClass().getName());
@@ -35,7 +51,11 @@ public class RpcClient implements InvocationHandler {
         request.setParameterTypes(method.getParameterTypes());
         request.setParameters(args);
         CompletableFuture<RpcResponse> future = RpcNettyClient.getInstance().sendRpcRequest(request);
-        return null;
+        RpcResponse response = future.get();
+        if(StringUtils.isNotEmpty(response.getError())){
+            return response.getError();
+        }
+        return response.getResult();
     }
 
 

@@ -1,9 +1,7 @@
 package com.skr.signal;
 
 
-import com.skr.signal.base.rpc.client.RpcNettyClient;
 import com.skr.signal.base.rpc.server.RpcServer;
-import com.skr.signal.common.service.HelloWorldService;
 
 /**
  * @author mqw
@@ -12,11 +10,8 @@ import com.skr.signal.common.service.HelloWorldService;
 public class BaseMain {
 
     public static void main(String[] args) throws InterruptedException {
-        RpcServer.getInstance();
-//        System.out.println(instance);
-//        RpcClient.create(HelloWorldService.class);
-//        HelloWorldService proxy = RpcNettyClient.createProxy(HelloWorldService.class);
-//        proxy.helloWorld("???");
+        RpcServer instance = RpcServer.run();
+        System.out.println(instance);
     }
 
 }

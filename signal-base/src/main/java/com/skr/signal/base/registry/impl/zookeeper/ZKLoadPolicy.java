@@ -6,6 +6,7 @@ package com.skr.signal.base.registry.impl.zookeeper;/**
 import com.skr.signal.base.registry.LoadPolicy;
 
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @auther mqw
@@ -15,6 +16,6 @@ public class ZKLoadPolicy implements LoadPolicy {
 
     @Override
     public String filterServices(List<String> services) {
-        return null;
+        return services.get(ThreadLocalRandom.current().nextInt(services.size()));
     }
 }
