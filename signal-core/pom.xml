@@ -14,7 +14,12 @@
 
     <dependencies>
 
-        
+        <dependency>
+            <groupId>com.skr.signal</groupId>
+            <artifactId>signal-base</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
     </dependencies>
 
 </project>

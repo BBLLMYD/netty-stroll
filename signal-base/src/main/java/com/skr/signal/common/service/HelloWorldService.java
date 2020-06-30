@@ -6,8 +6,6 @@ package com.skr.signal.common.service;
  */
 public interface HelloWorldService {
 
-
-    public String helloWorld(String sth);
-
+    String helloWorld(String sth);
 
 }

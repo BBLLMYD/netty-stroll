@@ -13,6 +13,9 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE,ElementType.LOCAL_VARIABLE})
 public @interface RpcServiceTag {
 
-    String serviceName() default "";
+    // 发布的接口
+    Class targetService();
+
+    String serviceTag() default "";
 
 }
