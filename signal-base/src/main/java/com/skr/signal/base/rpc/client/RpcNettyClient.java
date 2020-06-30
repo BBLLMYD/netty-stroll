@@ -22,10 +22,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
 /**
- * 用于初始化 和 关闭 Bootstrap 对象
- *
- * @author shuang.kou
- * @createTime 2020年05月29日 17:51:00
+ * @author mqw
+ * @create 2020-06-22-13:51
  */
 @Slf4j
 public final class RpcNettyClient {
