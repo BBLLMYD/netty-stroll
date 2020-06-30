@@ -23,9 +23,9 @@ import java.util.Objects;
  * *****重点*****：整个pipeline都是在同一个线程里完成的，
  *  如果当前pipeline流程中有阻塞状态的线程，此时后续的请求不会开启新的worker线程处理！！而是同步阻塞！！
  *      （因为当线程阻塞的时候netty的设计认为你是在进行处理IO读写操作）
- *  如果当前pipeline流程中的线程处于Runnable的忙碌状态，后续的请求才会开启新的线程处理！！
+ *  如果当前pipeline流程中的线程处于Runnable的忙碌状态，后续的请求才会开启新的线程处理！
  *      （并会新建当前pipeline下的handler对象）
- *  所以在IO读写的handler中，尽量不要做其他有阻塞行为动作！！可以交给其他线程池异步隔离！！
+ *  所以在IO读写的handler中，尽量不要做其他有阻塞行为动作！！可以交给其他线程池异步隔离！
  *  将handler线程阻塞会严重影响吞吐率！！
  *
  * @create 2020-06-04-10:28
@@ -49,12 +49,6 @@ public class HttpDistributor extends ChannelInboundHandlerAdapter {
                 return;
             }
 
-            System.out.println(channelHandlerContext.hashCode());
-            System.out.println(channelHandlerContext.pipeline().hashCode());
-            System.out.println(this.hashCode());
-            // boolean flag = 1 == 1;
-            // while (flag){}
-
             // 获取请求体
             ByteBuf buf = httpRequest.content();
             String reqContent = buf.toString(CharsetUtil.UTF_8);
@@ -77,11 +71,12 @@ public class HttpDistributor extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         log.error(Constant.SERVER_ERROR,cause);
-        String msg;
+        String msg = null;
         if(cause instanceof ServiceException){
             msg = ((ServiceException) cause).getMsg();
-        }else {
-            msg = "内部错误";
+        }
+        if(Objects.isNull(msg)){
+            msg = "Server内部错误";
         }
         ctx.writeAndFlush(HttpResponseBuilder.buildResponse(msg));
         ctx.channel().close();

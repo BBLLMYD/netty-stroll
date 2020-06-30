@@ -62,7 +62,7 @@ public final class RpcNettyClient {
         CompletableFuture<Channel> completableFuture = new CompletableFuture<>();
         bootstrap.connect(inetSocketAddress).addListener((ChannelFutureListener) future -> {
             if (future.isSuccess()) {
-                log.info("客户端向服务端发起连接成功");
+                log.info("当前客户端向服务端[{}]发起连接成功:",inetSocketAddress.toString());
                 completableFuture.complete(future.channel());
             } else {
                 throw new IllegalStateException();
@@ -107,8 +107,7 @@ public final class RpcNettyClient {
     }
 
     public static <T> T createProxy(Class<T> interfaceClass) {
-        RpcClient rpcClient = new RpcClient();
-        return rpcClient.create(interfaceClass);
+        return RpcClient.getInstance().create(interfaceClass);
     }
 
 

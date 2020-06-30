@@ -18,15 +18,23 @@ import java.util.concurrent.ExecutionException;
  */
 public class RpcClient implements InvocationHandler {
 
+    private static final RpcClient rpcClient = new RpcClient();
 
     @SuppressWarnings("unchecked")
-    public <T> T create(Class<T> interfaceClass) {
+    public   <T> T create(Class<T> interfaceClass) {
         T o = (T)Proxy.newProxyInstance(
                 interfaceClass.getClassLoader(),
                 new Class<?>[]{interfaceClass},
                 this);
         return o;
     }
+
+    private RpcClient(){};
+
+    public static RpcClient getInstance(){
+        return rpcClient;
+    }
+
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Exception {

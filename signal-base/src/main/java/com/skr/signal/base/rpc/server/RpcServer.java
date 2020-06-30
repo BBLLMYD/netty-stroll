@@ -105,7 +105,7 @@ public class RpcServer {
             if(CollectionUtils.isNotEmpty(list)){
                 list = list.stream().filter(vo->vo.isAnnotationPresent(RpcServiceTag.class)).collect(Collectors.toList());
                 list.stream().forEach(vo->{
-                    String serviceName = vo.getAnnotation(RpcServiceTag.class).serviceName();
+                    String serviceName = vo.getAnnotation(RpcServiceTag.class).targetService().getName();
                     serviceRegistry.register(serviceName,serverAddress);
                     try {
                         handlerMap.put(serviceName,vo.newInstance());

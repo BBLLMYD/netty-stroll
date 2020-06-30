@@ -1,4 +1,4 @@
-package com.skr.signal.core.service;
+package com.skr.signal.common.service;
 
 /**
  * @author mqw
@@ -6,6 +6,6 @@ package com.skr.signal.core.service;
  */
 public interface ComputeService {
 
-
+    String compute(String args);
 
 }

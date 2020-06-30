@@ -25,7 +25,6 @@ public final class CuratorUtils {
     private static Set<String> registeredPathSet = ConcurrentHashMap.newKeySet();
     private static CuratorFramework zkClient;
 
-
     public static void createPersistentNode(String path) {
         try {
             path = ZK_REGISTRY_PATH +"/"+ path;
@@ -40,12 +39,7 @@ public final class CuratorUtils {
         }
     }
 
-    /**
-     * 获取某个字节下的子节点,也就是获取所有提供服务的生产者的地址
-     *
-     * @param serviceName 服务对象接口名 eg:github.javaguide.HelloService
-     * @return 指定字节下的所有子节点
-     */
+
     public static List<String> getChildrenNodes(String serviceName) {
         if (serviceAddressMap.containsKey(serviceName)) {
             return serviceAddressMap.get(serviceName);
