@@ -1,5 +1,6 @@
 package com.skr.signal.base.rpc.client;
 
+import com.skr.signal.base.registry.LoadPolicy;
 import com.skr.signal.base.registry.ServiceDiscover;
 import com.skr.signal.base.registry.impl.load.RandomLoadPolicy;
 import com.skr.signal.base.registry.impl.zookeeper.ZKServiceDiscovery;
@@ -15,8 +16,10 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.net.InetSocketAddress;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -38,9 +41,29 @@ public final class RpcNettyClient {
     static {
         PropertiesUtil propertiesUtil = PropertiesUtil.newInstance("config-rpc.properties");
         String registrationAddress = propertiesUtil.readProperty("registration.address");
-        rpcNettyClient = new RpcNettyClient();
-        rpcNettyClient.setServiceDiscover(new ZKServiceDiscovery(registrationAddress,new RandomLoadPolicy()));
 
+        rpcNettyClient = new RpcNettyClient();
+
+        LoadPolicy loadPolicy;
+        ServiceDiscover discover;
+        String loadPolicyImplCfg      = propertiesUtil.readProperty("loadPolicy.impl");
+        String serviceDiscoverImplCfg = propertiesUtil.readProperty("serviceDiscover.impl");
+
+        try {
+            if (StringUtils.isEmpty(loadPolicyImplCfg)) {
+                loadPolicy = new RandomLoadPolicy();
+            } else {
+                loadPolicy = (LoadPolicy) Class.forName(loadPolicyImplCfg).newInstance();
+            }
+            if (StringUtils.isEmpty(serviceDiscoverImplCfg)) {
+                discover = new ZKServiceDiscovery();
+            } else {
+                discover = (ServiceDiscover) Class.forName(serviceDiscoverImplCfg).newInstance();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("初始化服务发现组件期间异常",e);
+        }
+        rpcNettyClient.setServiceDiscover(discover.loadPolicy(loadPolicy).registryAddress(registrationAddress));
         eventLoopGroup = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
         bootstrap.group(eventLoopGroup)
@@ -50,9 +73,10 @@ public final class RpcNettyClient {
                 .handler(new RpcClientInitializer());
     }
 
-    private RpcNettyClient(){}
+    private RpcNettyClient() {
+    }
 
-    public static RpcNettyClient getInstance(){
+    public static RpcNettyClient getInstance() {
         return rpcNettyClient;
     }
 
@@ -60,7 +84,7 @@ public final class RpcNettyClient {
         CompletableFuture<Channel> completableFuture = new CompletableFuture<>();
         bootstrap.connect(inetSocketAddress).addListener((ChannelFutureListener) future -> {
             if (future.isSuccess()) {
-                log.info("当前客户端向服务端[{}]发起连接成功:",inetSocketAddress.toString());
+                log.info("当前客户端向服务端[{}]发起连接成功:", inetSocketAddress.toString());
                 completableFuture.complete(future.channel());
             } else {
                 throw new IllegalStateException();
@@ -76,13 +100,13 @@ public final class RpcNettyClient {
         String discover = serviceDiscover.discover(rpcRequest.getClassName());
         String[] address = discover.split(":");
 
-        Channel channel = ChannelManager.getChannel(new InetSocketAddress(address[0],Integer.valueOf(address[1])));
+        Channel channel = ChannelManager.getChannel(new InetSocketAddress(address[0], Integer.valueOf(address[1])));
 
         CountDownLatch latch = new CountDownLatch(1);
 
         if (channel != null && channel.isActive()) {
             // 放入未处理的请求
-            AsyncResultContainer.put(rpcRequest.getTraceId(),resultFuture);
+            AsyncResultContainer.put(rpcRequest.getTraceId(), resultFuture);
             channel.writeAndFlush(rpcRequest).addListener((ChannelFutureListener) future -> {
                 if (future.isSuccess()) {
                     log.info("client send message: [{}]", rpcRequest);
@@ -99,7 +123,7 @@ public final class RpcNettyClient {
         try {
             latch.await();
         } catch (InterruptedException e) {
-            log.error(" wait result error : ",e);
+            log.error(" wait result error : ", e);
         }
         return resultFuture;
     }

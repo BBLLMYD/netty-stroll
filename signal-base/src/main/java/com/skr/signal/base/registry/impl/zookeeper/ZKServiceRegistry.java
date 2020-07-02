@@ -9,7 +9,6 @@ import lombok.Data;
  * @date 2020-06-25
  **/
 @Data
-@AllArgsConstructor
 public class ZKServiceRegistry implements ServiceRegistry {
 
     private String registryAddress;
@@ -19,6 +18,12 @@ public class ZKServiceRegistry implements ServiceRegistry {
         CuratorUtils.initZkClient(registryAddress);
         String servicePath = service + "/" + serviceAddress;
         CuratorUtils.createPersistentNode(servicePath);
+    }
+
+    @Override
+    public ServiceRegistry registryAddress(String registryAddress) {
+        this.registryAddress = registryAddress;
+        return this;
     }
 
 }

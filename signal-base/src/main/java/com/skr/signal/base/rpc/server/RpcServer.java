@@ -20,7 +20,6 @@ import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import sun.rmi.runtime.Log;
 
 import java.util.HashMap;
 import java.util.List;
@@ -51,15 +50,26 @@ public class RpcServer {
     private static volatile RpcServer serverInstance;
 
     public static RpcServer run() {
-        if(serverInstance == null){
-            synchronized (RpcServer.class){
-                if(serverInstance == null){
+        if (serverInstance == null) {
+            synchronized (RpcServer.class) {
+                if (serverInstance == null) {
                     PropertiesUtil propertiesUtil = PropertiesUtil.newInstance("config-rpc.properties");
                     String serverAddress = propertiesUtil.readProperty("server.address");
                     String registrationAddress = propertiesUtil.readProperty("registration.address");
-                    if(StringUtils.isNotEmpty(serverAddress) && StringUtils.isNotEmpty(registrationAddress)){
-                        ServiceRegistry serviceRegistry = new ZKServiceRegistry(registrationAddress);
-                        serverInstance = new RpcServer(serverAddress,serviceRegistry);
+                    if (StringUtils.isNotEmpty(serverAddress) && StringUtils.isNotEmpty(registrationAddress)) {
+                        ServiceRegistry serviceRegistry;
+                        String serviceRegistryImplCfg = propertiesUtil.readProperty("serviceRegistry.impl");
+                        if (StringUtils.isEmpty(serviceRegistryImplCfg)) {
+                            serviceRegistry = new ZKServiceRegistry();
+                        } else {
+                            try {
+                                serviceRegistry = (ServiceRegistry) Class.forName(serviceRegistryImplCfg).newInstance();
+                            } catch (Exception e) {
+                                throw new RuntimeException("初始化serviceRegistry期间异常", e);
+                            }
+                        }
+                        serviceRegistry.registryAddress(registrationAddress);
+                        serverInstance = new RpcServer(serverAddress, serviceRegistry);
                     }
                     serverInstance.shutDownHook();
                     serverInstance.start();
@@ -69,7 +79,7 @@ public class RpcServer {
         return serverInstance;
     }
 
-    private void shutDownHook(){
+    private void shutDownHook() {
         Runtime.getRuntime().addShutdownHook(new Thread(CuratorUtils::clearRegistry));
     }
 
@@ -102,15 +112,15 @@ public class RpcServer {
             PropertiesUtil propertiesUtil = PropertiesUtil.newInstance("config-rpc.properties");
             String basePackage = propertiesUtil.readProperty("server.basePackage");
             List<Class<?>> list = ClassUtil.getClassList(basePackage, true);
-            if(CollectionUtils.isNotEmpty(list)){
-                list = list.stream().filter(vo->vo.isAnnotationPresent(RpcServiceTag.class)).collect(Collectors.toList());
-                list.stream().forEach(vo->{
+            if (CollectionUtils.isNotEmpty(list)) {
+                list = list.stream().filter(vo -> vo.isAnnotationPresent(RpcServiceTag.class)).collect(Collectors.toList());
+                list.stream().forEach(vo -> {
                     String serviceName = vo.getAnnotation(RpcServiceTag.class).targetService().getName();
-                    serviceRegistry.register(serviceName,serverAddress);
+                    serviceRegistry.register(serviceName, serverAddress);
                     try {
-                        handlerMap.put(serviceName,vo.newInstance());
+                        handlerMap.put(serviceName, vo.newInstance());
                     } catch (Exception e) {
-                        log.error("初始化业务实现类异常",e);
+                        log.error("初始化业务实现类异常", e);
                     }
                 });
             }
@@ -119,10 +129,8 @@ public class RpcServer {
             ChannelFuture future = bootstrap.bind(host, port).sync();
             future.channel().closeFuture().sync();
         } catch (Exception e) {
-            throw new RuntimeException("服务启动失败",e);
+            throw new RuntimeException("服务启动失败", e);
         }
     }
-
-
 
 }
