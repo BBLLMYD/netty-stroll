@@ -8,4 +8,6 @@ public interface ServiceRegistry {
 
     void register(String service, String address);
 
+    ServiceRegistry registryAddress(String registryAddress);
+
 }

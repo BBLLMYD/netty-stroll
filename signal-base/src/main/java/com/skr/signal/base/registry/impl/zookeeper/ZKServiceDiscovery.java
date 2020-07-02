@@ -4,6 +4,7 @@ import com.skr.signal.base.registry.LoadPolicy;
 import com.skr.signal.base.registry.ServiceDiscover;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
@@ -24,16 +25,12 @@ import java.util.concurrent.ThreadLocalRandom;
  * @auther mqw
  * @date 2020-06-25
  **/
-@Data
-@AllArgsConstructor
 public class ZKServiceDiscovery implements ServiceDiscover {
 
-    private static volatile Map<String, List<String>> serviceAddressMap = new ConcurrentHashMap<>();
-
+    @Getter
     private String registryAddress;
+    @Getter
     private LoadPolicy loadPolicy;
-
-
 
     @Override
     public String discover(String serviceName) {
@@ -43,7 +40,17 @@ public class ZKServiceDiscovery implements ServiceDiscover {
         return serviceAddress;
     }
 
+    @Override
+    public ServiceDiscover loadPolicy(LoadPolicy loadPolicy) {
+        this.loadPolicy = loadPolicy;
+        return this;
+    }
 
+    @Override
+    public ServiceDiscover registryAddress(String registryAddress) {
+        this.registryAddress = registryAddress;
+        return this;
+    }
 
 
 }
