@@ -1,12 +1,4 @@
-package com.skr.signal.base.rpc.letter.serialize;/**
- * @author mqw
- * @create 2020-07-02-10:45
- */
-
-import com.skr.signal.common.util.PropertiesUtil;
-
-import java.io.Serializable;
-
+package com.skr.signal.base.rpc.letter.serialize;
 
 /**
  * @auther mqw
