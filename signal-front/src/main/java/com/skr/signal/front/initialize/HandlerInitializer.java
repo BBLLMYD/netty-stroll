@@ -28,8 +28,7 @@ public class HandlerInitializer {
     }
 
     private static void init()  {
-        PropertiesUtil.newInstance("config-http.properties").readProperty("");
-        String packageName = "com.skr.signal.front.handler.impl";
+        String packageName = PropertiesUtil.newInstance("config-http.properties").readProperty("front.handler.basePackage");
         List<Class<?>> list = ClassUtil.getClassList(packageName, true);
         if(CollectionUtils.isNotEmpty(list)){
             list = list.stream().filter(vo->vo.isAnnotationPresent(HandlerTag.class)).collect(Collectors.toList());
