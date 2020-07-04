@@ -6,8 +6,6 @@ package com.skr.signal.base.rpc.letter.serialize;
  **/
 public interface SignalSerializable {
 
-
-
     <T> byte[] serialize(T obj);
 
     <T> T deserialize(byte[] data, Class<T> cls);
