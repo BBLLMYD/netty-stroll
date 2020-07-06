@@ -1,6 +1,6 @@
-package com.skr.signal.data.initialize;
+package com.skr.signal.data.websocket.initialize;
 
-import com.skr.signal.data.handler.WebSocketHandler;
+import com.skr.signal.data.websocket.handler.WebSocketHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;

@@ -7,6 +7,4 @@ package com.skr.signal.data.source;
 public interface DataAbstraction<T> {
 
 
-
-
 }
