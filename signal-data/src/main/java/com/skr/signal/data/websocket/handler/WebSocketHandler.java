@@ -1,4 +1,4 @@
-package com.skr.signal.data.handler;
+package com.skr.signal.data.websocket.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
