@@ -29,7 +29,7 @@ RPC通信基础框架
 <div align=center>应用模型示例</div>
 <br>
 
-<div align=center>![image][imgaaa]
+![image][imgaaa]
 
 请求响应示例：
 
