@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class CuratorUtils {
 
     private static final String ZK_REGISTRY_PATH = "/skr-rpc";
-    private static final int BASE_SLEEP_TIME = 3000;
+    private static final int BASE_SLEEP_TIME = 6000;
     private static final int MAX_RETRIES = 5;
     private static volatile Map<String, List<String>> serviceAddressMap = new ConcurrentHashMap<>();
     private static Set<String> registeredPathSet = ConcurrentHashMap.newKeySet();
