@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,22 +54,25 @@ public class RpcServer {
         if (serverInstance == null) {
             synchronized (RpcServer.class) {
                 if (serverInstance == null) {
+                    String serverAddress;
                     PropertiesUtil propertiesUtil = PropertiesUtil.newInstance("config-rpc.properties");
-                    String serverAddress = propertiesUtil.readProperty("server.address");
+                    String port = propertiesUtil.readProperty("server.address");
                     String registrationAddress = propertiesUtil.readProperty("registration.address");
-                    if (StringUtils.isNotEmpty(serverAddress) && StringUtils.isNotEmpty(registrationAddress)) {
+                    if (StringUtils.isNotEmpty(port) && StringUtils.isNotEmpty(registrationAddress)) {
                         ServiceRegistry serviceRegistry;
                         String serviceRegistryImplCfg = propertiesUtil.readProperty("serviceRegistry.impl");
-                        if (StringUtils.isEmpty(serviceRegistryImplCfg)) {
-                            serviceRegistry = new ZKServiceRegistry();
-                        } else {
-                            try {
+                        try {
+                            if (StringUtils.isEmpty(serviceRegistryImplCfg)) {
+                                serviceRegistry = new ZKServiceRegistry();
+                            } else {
                                 serviceRegistry = (ServiceRegistry) Class.forName(serviceRegistryImplCfg).newInstance();
-                            } catch (Exception e) {
-                                throw new RuntimeException("初始化serviceRegistry期间异常", e);
                             }
+                            serviceRegistry.registryAddress(registrationAddress);
+                            String address = InetAddress.getLocalHost().getHostAddress();
+                            serverAddress = address + ":" + port;
+                        } catch (Exception e) {
+                            throw new RuntimeException("初始化serviceRegistry期间异常", e);
                         }
-                        serviceRegistry.registryAddress(registrationAddress);
                         serverInstance = new RpcServer(serverAddress, serviceRegistry);
                     }
                     serverInstance.shutDownHook();
