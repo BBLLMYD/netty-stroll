@@ -78,7 +78,7 @@ public class HttpDistributor extends ChannelInboundHandlerAdapter {
         if(Objects.isNull(msg)){
             msg = "Server内部错误";
         }
-        ctx.writeAndFlush(HttpResponseBuilder.buildResponse(msg));
+        ctx.writeAndFlush(AsyncHandleUnit.buildResponse(msg));
         ctx.channel().close();
     }
 
