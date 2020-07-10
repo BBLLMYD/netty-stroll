@@ -83,7 +83,7 @@ Response：
 
 <br>
 <div align=center><img src="https://github.com/BBLLMYD/netty-stroll/blob/master/other/img.png?raw=true" width="667" alt="应用模型示例" ></div>
-<font color="grey" size=7 align="center">（示例模型）</font>
+<div align=center>（示例模型）<div>
 <br>
 
 
