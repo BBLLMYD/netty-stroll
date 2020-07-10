@@ -46,8 +46,7 @@
     ```
 - signal-core 、 signal-route 、 signal-data
 
-    引入 base 包后通过 @RpcServiceTag 发布注册服务；<br>
-    使用 RpcClient.create(XService.class) 调用服务，同时可以在 Client 端自行扩展负载均衡策略
+    引入 base 包后通过 @RpcServiceTag 发布注册服务，使用 RpcClient.create(XService.class) 远程调用服务，同时可以在 Client 端自行扩展负载均衡策略
     
 
 ---
@@ -56,9 +55,9 @@
 
 PS：，并配置在classpath下config-rpc.properties文件，默认配置了本地2181端口。
 
-- Step-1 . 没有扩展注册中心情况下，服务通信默认需要提前安装启动ZooKeeper；
+- Step-1 ： 没有扩展注册中心情况下，服务通信默认需要提前安装启动ZooKeeper；
 
-- Step-2 . 确认配置信息，如果ZK正常启动缺省值即可用；
+- Step-2 ： 确认配置信息，如果ZK正常启动缺省值即可用；
 
 config-rpc.properties
 ```
@@ -68,7 +67,9 @@ server.basePackage=com.skr.xxx          # 递归扫描配置包下的服务提�
 ...
 ```
 
-- Step-3 . 向前置（front）节点发送Http请求。
+- Step-3 ： 启动signal-data(DataMain)、signal-route(RouteMain)、signal-core(CoreMain)、signal-front(FrontMain) 
+
+- Step-4 ： 向前置（front）节点发送Http请求
 
 ```
 curl  -X POST --data '{"traceId":"traceId","businessId":"businessId","requestKey":"requestKey"}' http://127.0.0.1:9001/front
