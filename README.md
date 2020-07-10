@@ -1,5 +1,7 @@
 ## RPC通信基础框架
 
+
+
 ---
 
 ### 1. 基础实现
@@ -65,7 +67,7 @@ server.basePackage=com.skr.xxx          # 递归扫描配置包下的服务提�
 ...
 ```
 
-- Step-3： 启动signal-data(DataMain)、signal-route(RouteMain)、signal-core(CoreMain)、signal-front(FrontMain) 
+- Step-3： 启动 DataMain、RouteMain、CoreMain、FrontMain
 
 - Step-4： 向前置（front）节点发送Http请求
 
@@ -80,9 +82,8 @@ Response：
 --- 
 
 <br>
-
 <div align=center><img src="https://github.com/BBLLMYD/netty-stroll/blob/master/other/img.png?raw=true" width="667" alt="应用模型示例" ></div>
-<font color="grey" size=7 align="center">（应用示例）</font>
+<font color="grey" size=7 align="center">（示例模型）</font>
 <br>
 
 
