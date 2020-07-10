@@ -24,8 +24,12 @@ public class AsyncResponseManager {
             new LinkedBlockingQueue<>(7),
             new NamedThreadFactory("asyncResponse-pool-%d"));
 
+
+
     public static void asyncResponse(AsyncHandleUnit asyncHandleUnit) throws Exception {
         Future<Boolean> future = pool.submit(asyncHandleUnit);
+
+
         boolean success = false;
         try {
             success = future.get();

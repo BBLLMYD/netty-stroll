@@ -34,7 +34,8 @@
         
 - signal-front 
 
-    基于 Netty 实现简易版独立的 HttpServer；同时引入 base 包提供作为 RPC Client 端的基础向下游发起调用
+    基于 Netty 实现简易版独立的 HttpServer，读
+    同时引入 base 包提供作为 RPC Client 端的基础向下游发起调用
     ```
     /** 通过注解和继承 指定path和输入输出类型，扩展接口无需关注通信细节 */
     @HandlerTag(path = "/front") 
@@ -50,7 +51,6 @@
 
     引入 base 包、配置 config-rpc.properties 后通过 @RpcServiceTag 发布注册服务，使用 RpcClient.create(XService.class) 远程调用服务，同时可以在 Client 端自行扩展负载均衡策略
     
-
 ---
 
 ### 3. 使用示例

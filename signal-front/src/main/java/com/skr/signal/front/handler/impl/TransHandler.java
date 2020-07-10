@@ -17,11 +17,11 @@ public class TransHandler extends Handler<RequestInfo, ResponseInfo> {
 
     @Override
     public ResponseInfo handle(RequestInfo requestInfo) {
-        ComputeService computeService = RpcNettyClient.createProxy(ComputeService.class);
-        String requestKey = requestInfo.getRequestKey();
-        String computeRest = computeService.compute(requestKey);
+//        ComputeService computeService = RpcNettyClient.createProxy(ComputeService.class);
+//        String requestKey = requestInfo.getRequestKey();
+//        String computeRest = computeService.compute(requestKey);
         ResponseInfo info = new ResponseInfo();
-        info.setAnswer(computeRest);
+        info.setAnswer("xxx");
         return info;
     }
 
