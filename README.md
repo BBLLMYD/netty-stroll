@@ -34,7 +34,7 @@
 
     基于 Netty 实现简易版独立的 HttpServer；同时引入 base 包提供作为 RPC Client 端的基础向下游发起调用
     ```
-    /* 通过注解和继承 指定path和输入输出类型，扩展接口无需关注通信细节 */
+    /** 通过注解和继承 指定path和输入输出类型，扩展接口无需关注通信细节 */
     @HandlerTag(path = "/front") 
     public class TransHandler extends Handler<RequestInfo, ResponseInfo> {
         @Override
@@ -44,17 +44,11 @@
         }
     }
     ```
-    
-- signal-core、signal-route、signal-data
+- signal-core 、 signal-route 、 signal-data
 
     引入 base 包后通过 @RpcServiceTag 发布注册服务；<br>
     使用 RpcClient.create(XService.class) 调用服务，同时可以在 Client 端自行扩展负载均衡策略
     
-- 应用模型示例
-
-<div align=center><img src="https://github.com/BBLLMYD/netty-stroll/blob/master/other/img.jpg?raw=true" width="556" alt="应用模型示例" ></div>
-<font text-align=center face="verdana" size="2" color="grey">应用模型示例</font>
-<br>
 
 ---
 
@@ -62,7 +56,9 @@
 
 PS：，并配置在classpath下config-rpc.properties文件，默认配置了本地2181端口。
 
-- 3.1 没有扩展注册中心情况下，服务通信默认需要提前安装启动ZooKeeper
+- Step-1 . 没有扩展注册中心情况下，服务通信默认需要提前安装启动ZooKeeper；
+
+- Step-2 . 确认配置信息，如果ZK正常启动缺省值即可用；
 
 config-rpc.properties
 ```
@@ -71,7 +67,9 @@ server.address=port                     # 当前服务占用的端口
 server.basePackage=com.skr.xxx          # 递归扫描配置包下的服务提供者并注册服务
 ...
 ```
-向前置发送Http请求：
+
+- Step-3 . 向前置（front）节点发送Http请求。
+
 ```
 curl  -X POST --data '{"traceId":"traceId","businessId":"businessId","requestKey":"requestKey"}' http://127.0.0.1:9001/front
 ```
@@ -79,6 +77,12 @@ Response：
 ```
 {"answer":"[core][route][data]requestKey[data][route][core]"}
 ```
+
+- 应用模型示例
+
+<div align=center><img src="https://github.com/BBLLMYD/netty-stroll/blob/master/other/img.jpg?raw=true" width="556" alt="应用模型示例" ></div>
+<font align="center" face="verdana" size="2" color="grey">应用模型示例</font>
+<br>
 
 
 
