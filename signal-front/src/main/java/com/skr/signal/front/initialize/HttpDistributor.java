@@ -53,12 +53,12 @@ public class HttpDistributor extends ChannelInboundHandlerAdapter {
             ByteBuf buf = httpRequest.content();
             String reqContent = buf.toString(CharsetUtil.UTF_8);
 
+            System.err.println(Thread.currentThread().getId()+"-----"+Thread.currentThread().getName());
             // 构建异步响应单元，交给处理器
             AsyncHandleUnit handleUnit = AsyncHandleUnit.builder()
                     .channelHandlerContext(channelHandlerContext)
-                    .content(reqContent)
-                    .handler(handler)
-                    .build();
+                    .content(reqContent).handler(handler).build();
+
             AsyncResponseManager.asyncResponse(handleUnit);
             ReferenceCountUtil.release(buf);
 

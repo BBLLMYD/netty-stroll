@@ -19,7 +19,7 @@ public class HttpServer {
     }
 
     public static void run(){
-        EventLoopGroup boss = new NioEventLoopGroup(5);
+        EventLoopGroup boss = new NioEventLoopGroup();
         EventLoopGroup worker = new NioEventLoopGroup(3);
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
