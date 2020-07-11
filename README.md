@@ -69,7 +69,7 @@ server.basePackage=com.skr.xxx          # 递归扫描配置包下的服务提�
 ...
 ```
 
-- Step-3： 启动 DataMain、RouteMain、CoreMain、FrontMain
+- Step-3： 启动 DataMain、RouteMain、CoreMain、FrontMain；
 
 - Step-4： 向前置（front）节点发送Http请求
 
