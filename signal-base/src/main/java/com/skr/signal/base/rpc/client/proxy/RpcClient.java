@@ -64,7 +64,7 @@ public class RpcClient implements InvocationHandler {
                 throw new IllegalStateException(String.valueOf(method));
             }
         }
-        RpcResponse response = null;
+        RpcResponse response;
         try {
             RpcRequest request = new RpcRequest();
             request.setTraceId(UUID.randomUUID().toString());
