@@ -30,11 +30,11 @@
 
 ### 2. 说明
 
-- signal-base 
+- **signal-base** 
     
     封装了上述提到的 RPC 各**基础组件和扩展点**；同时将需要发布的上层接口放在 common.service 包下
         
-- signal-front 
+- **signal-front** 
 
     基于 Netty 实现简易版独立的 HttpServer，读
     同时引入 base 包提供作为 RPC Client 端的基础向下游发起调用
@@ -57,9 +57,9 @@
 
 ### 3. 使用示例
 
-- Step-1： 没有扩展注册中心情况下，服务通信默认需要提前安装启动ZooKeeper；
+- **Step-1：** 没有扩展注册中心情况下，服务通信默认需要提前安装启动ZooKeeper；
 
-- Step-2： 确认配置信息，如果ZK正常启动缺省值即可用；
+- **Step-2：** 确认配置信息，如果ZK正常启动缺省值即可用；
 
 config-rpc.properties
 ```
@@ -69,9 +69,9 @@ server.basePackage=com.skr.xxx          # 递归扫描配置包下的服务提�
 ...
 ```
 
-- Step-3： 启动 DataMain、RouteMain、CoreMain、FrontMain；
+- **Step-3：** 启动 DataMain、RouteMain、CoreMain、FrontMain；
 
-- Step-4： 向前置（front）节点发送Http请求
+- **Step-4：** 向前置（front）节点发送Http请求
 
 ```
 curl  -X POST --data '{"traceId":"traceId","businessId":"businessId","requestKey":"requestKey"}' http://127.0.0.1:9001/front
