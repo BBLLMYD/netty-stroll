@@ -41,9 +41,7 @@ public class HttpDistributor extends ChannelInboundHandlerAdapter {
             FullHttpRequest httpRequest = (FullHttpRequest) httpObject;
 
             // 获取uri, 过滤指定的资源
-            URI uri = new URI(httpRequest.uri());
-            String path = uri.getPath();
-            Handler handler = HandlerInitializer.getHandler(path);
+            Handler handler = HandlerInitializer.getHandler(httpRequest.uri());
             if(Objects.isNull(handler)) {
                 channelHandlerContext.channel().close();
                 return;
