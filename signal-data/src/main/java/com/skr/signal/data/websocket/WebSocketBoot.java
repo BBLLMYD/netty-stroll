@@ -2,6 +2,7 @@ package com.skr.signal.data.websocket;
 
 import com.skr.signal.data.websocket.initialize.WebSocketChanelInitializer;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -19,6 +20,7 @@ public class WebSocketBoot {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(boss,worker)
                     .channel(NioServerSocketChannel.class)
+                    .childOption(ChannelOption.TCP_NODELAY, true)
                     .childHandler(new WebSocketChanelInitializer());
             bootstrap.bind(9001).sync().channel().closeFuture().sync();
         } catch (InterruptedException e) {

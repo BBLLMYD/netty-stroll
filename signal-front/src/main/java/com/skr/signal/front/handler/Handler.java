@@ -36,7 +36,7 @@ public abstract class Handler<Request,Response> {
     private Response buildResponseTypeData(Request request) {
         Response response;
         try {
-            response = handle(request);
+            response = this.handle(request);
         } catch (Throwable e) {
             throw new ServiceException("请求处理异常",e);
         }
