@@ -41,9 +41,7 @@ public class HttpDistributor extends ChannelInboundHandlerAdapter {
             FullHttpRequest httpRequest = (FullHttpRequest) httpObject;
 
             // 获取uri, 过滤指定的资源
-            URI uri = new URI(httpRequest.uri());
-            String path = uri.getPath();
-            Handler handler = HandlerInitializer.getHandler(path);
+            Handler handler = HandlerInitializer.getHandler(httpRequest.uri());
             if(Objects.isNull(handler)) {
                 channelHandlerContext.channel().close();
                 return;
@@ -53,12 +51,12 @@ public class HttpDistributor extends ChannelInboundHandlerAdapter {
             ByteBuf buf = httpRequest.content();
             String reqContent = buf.toString(CharsetUtil.UTF_8);
 
+            System.err.println(Thread.currentThread().getId()+"-----"+Thread.currentThread().getName());
             // 构建异步响应单元，交给处理器
             AsyncHandleUnit handleUnit = AsyncHandleUnit.builder()
                     .channelHandlerContext(channelHandlerContext)
-                    .content(reqContent)
-                    .handler(handler)
-                    .build();
+                    .content(reqContent).handler(handler).build();
+
             AsyncResponseManager.asyncResponse(handleUnit);
             ReferenceCountUtil.release(buf);
 
@@ -78,7 +76,7 @@ public class HttpDistributor extends ChannelInboundHandlerAdapter {
         if(Objects.isNull(msg)){
             msg = "Server内部错误";
         }
-        ctx.writeAndFlush(HttpResponseBuilder.buildResponse(msg));
+        ctx.writeAndFlush(AsyncHandleUnit.buildResponse(msg));
         ctx.channel().close();
     }
 
