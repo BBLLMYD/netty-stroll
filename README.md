@@ -31,7 +31,7 @@
     
     ...
     
-<div align=center><img src="https://github.com/BBLLMYD/netty-stroll/blob/master/other/baset.png?raw=true" width="334" alt="RPC基础模式" ></div>
+<div align=center><img src="https://github.com/BBLLMYD/netty-stroll/blob/master/other/baset.png?raw=true" width="443" alt="RPC基础模式" ></div>
 
 ---
 
