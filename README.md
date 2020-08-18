@@ -39,7 +39,7 @@
     
     封装了上述提到的 RPC 各**基础组件和扩展点**；同时将需要发布的上层接口放在 common.service 包下发布
         
-<div align=center><img src="https://github.com/BBLLMYD/netty-stroll/blob/master/other/baset.png?raw=true" width="433" alt="RPC基础模式" ></div>
+<div align=center><img src="https://github.com/BBLLMYD/netty-stroll/blob/master/other/baset.png?raw=true" width="423" alt="RPC基础模式" ></div>
 
 - **signal-front** 
 
