@@ -4,6 +4,11 @@
 
 这里主要是以学习为目的，围绕通信的部分实践一个轻量级的 RPC 框架。
 
+
+- [1. 基础实现](https://github.com/BBLLMYD/netty-stroll#1-%E5%9F%BA%E7%A1%80%E5%AE%9E%E7%8E%B0)
+- [2. 说明](https://github.com/BBLLMYD/netty-stroll#2-%E8%AF%B4%E6%98%8E)
+- [3. 应用示例](https://github.com/BBLLMYD/netty-stroll#3-%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B)
+
 ---
 
 ### 1. 基础实现
@@ -25,15 +30,17 @@
     默认 Random 访问，可扩展
     
     ...
-
+    
 ---
 
 ### 2. 说明
 
 - **signal-base** 
     
-    封装了上述提到的 RPC 各**基础组件和扩展点**；同时将需要发布的上层接口放在 common.service 包下
+    封装了上述提到的 RPC 各**基础组件和扩展点**；同时将需要发布的上层接口放在 common.service 包下发布
         
+<div align=center><img src="https://github.com/BBLLMYD/netty-stroll/blob/master/other/baset.png?raw=true" width="423" alt="RPC基础模式" ></div>
+
 - **signal-front** 
 
     基于 Netty 实现简易版独立的 HttpServer，读
@@ -55,7 +62,7 @@
     
 ---
 
-### 3. 使用示例
+### 3. 应用示例
 
 - **Step-1：** 没有扩展注册中心情况下，服务通信默认需要提前安装启动ZooKeeper；
 
@@ -66,6 +73,19 @@ config-rpc.properties
 registration.address=host:port          # 注册中心 host:port
 server.address=port                     # 当前服务占用的端口
 server.basePackage=com.skr.xxx          # 递归扫描配置包下的服务提供者并注册服务
+
+# 一些可选扩展配置
+
+# 序列化：        自定义实现com.skr.signal.base.rpc.letter.serialize.SignalSerializable接口，显示配置后会替换，默认采用 ProtoStuff 
+# serializer.impl=com.xxx    
+           
+# 负载均衡算法：   自定义实现com.skr.signal.base.registry.LoadPolicy接口，默认随机 
+# loadPolicy.impl=com.xxx
+
+# 服务发现/注册：  自定义实现com.skr.signal.base.registry.ServiceDiscover/ServiceRegistry接口，默认采用 Zookeeper 
+# serviceDiscover.impl=com.xxx
+# serviceRegistry.impl=com.xxx
+
 ...
 ```
 
@@ -84,7 +104,7 @@ Response：
 --- 
 
 <br>
-<div align=center><img src="https://github.com/BBLLMYD/netty-stroll/blob/master/other/img.png?raw=true" width="736" alt="应用模型示例" ></div>
+<div align=center><img src="https://github.com/BBLLMYD/netty-stroll/blob/master/other/img.png?raw=true" width="706" alt="应用模型示例" ></div>
 <br>
 
 
