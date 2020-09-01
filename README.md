@@ -46,13 +46,13 @@
     基于 Netty 实现简易版独立的 HttpServer，作为接入的网关层；
     同时引入 base 包提供作为 RPC Client 端的基础向下游发起调用
     
-    ```
+    ```java
     /** 通过注解和继承 指定path和输入输出类型，扩展接口无需关注通信细节 */
     @HandlerTag(path = "/front") 
     public class TransHandler extends Handler<RequestInfo, ResponseInfo> {
         @Override
         public ResponseInfo handle(RequestInfo requestInfo) {
-            ...
+            // ...
             return respInstance;
         }
     }
