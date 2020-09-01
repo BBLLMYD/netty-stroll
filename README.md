@@ -43,7 +43,7 @@
 
 - **signal-front** 
 
-    基于 Netty 实现简易版独立的 HttpServer，作为接入的网关层；
+    基于 Netty 实现简易独立的 HttpServer，作为接入的网关层；
     同时引入 base 包提供作为 RPC Client 端的基础向下游发起调用
     
     ```java
